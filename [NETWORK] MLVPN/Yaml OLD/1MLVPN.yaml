@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlvpn-deployment-agri
+spec:
+  selector:
+    matchLabels:
+      app: mlvpn
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: mlvpn
+    spec:
+      containers:
+      - name: mlvpn
+        image: hashicorp/http-echo
+        args:
+        - -p 5678:5678 -text="hello world"
+        ports:
+        - containerPort: 5678
+#      containers:
+#      - name: mlvpn
+#        image: carmelor93/aviot-mlvpn:latest
+#        #imagePullPolicy: Never
+#        args:
+#        - --privileged -e VAR_DOCKER_NETWORK='172.16.40' -p 5080:5080/udp --cap-add=NET_ADMIN --device=/dev/net/tun
+#        ports:
+#        - containerPort: 5080
+#        securityContext:
+#          capabilities:
+#            add:
+#            - NET_ADMIN
+#        volumeMounts:
+#        - mountPath: "/dev/net/tun"
+#          name: dev-net-tun
+#          readOnly: false
+#      volumes:
+#        - name: dev-net-tun
+#          hostPath:
+#            path: /dev/net/tun
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: mlvpn-services-agri-1
+#spec:
+#  type: NodePort
+#  selector:
+#    app: mlvpn-deployment-agri
+#  ports:
+#  - port: 5080
+#    name: mlvpn
+#    targetPort: 5080
+#    protocol: UDP
+#    nodePort: 30002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlvpn-services-agri-2
+spec:
+  type: NodePort
+  selector:
+    app: mlvpn-deployment-agri
+  ports:
+  - port: 5678
+    name: mlvpn
+    targetPort: 5678
+#    protocol: TCP
+#    nodePort: 30003

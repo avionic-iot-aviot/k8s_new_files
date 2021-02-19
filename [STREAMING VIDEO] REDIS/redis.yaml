@@ -1,0 +1,37 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis
+spec:
+  selector:
+    app: redis
+    run: redis
+  ports:
+    - name: redis
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        run: redis
+    spec:
+      restartPolicy: Always
+      hostname: redis
+      containers:
+        - image: redis:alpine
+          name: redis
+          ports:
+            - containerPort: 6379

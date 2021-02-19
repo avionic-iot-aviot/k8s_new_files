@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlvpn-deployment-agri
+spec:
+  selector:
+    matchLabels:
+      app: mlvpn
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: mlvpn
+    spec:
+      containers:
+      - name: mlvpn
+        image: carmelor93/aviot-mlvpn:latest
+        #imagePullPolicy: Never
+        args:
+        - --privileged -e VAR_DOCKER_NETWORK='172.16.40' -p 5080:5080/udp --cap-add=NET_ADMIN --device=/dev/net/tun
+        ports:
+        - containerPort: 5080
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+        volumeMounts:
+        - mountPath: "/dev/net/tun"
+          name: dev-net-tun
+          readOnly: false
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlvpn-services-agri
+spec:
+  type: NodePort
+  selector:
+    app: mlvpn-deployment-agri
+  ports:
+  - port: 5080
+    name: mlvpn
+    targetPort: 5080
+    protocol: UDP
+    nodePort: 30002
+
+#apiVersion: networking.k8s.io/v1beta1
+#kind: Ingress
+#metadata:
+#  name: minimal-ingres
+#spec:
+#  rules:
+#  - http:
+#      paths:
+#      - path: /mlvpn
+#        backend:
+#          serviceName: mlvpn-services-agri
+#          serviceport: 5080
+#apiVersion: networking.k8s.io/v1beta1
+#kind: Ingress
+#metadata:
+#  name: mlvpn-ingress-agri
+#  namespace: aviot-test-1
+#spec:
+#  rules:
+#  - http:
+#      paths:
+#          backend:
+#            service:
+#              name: mlvpn-ingress-agri
+#              port:
+#                number: 80     
+
+#apiVersion: networking.k8s.io/v1beta1
+#kind: Ingress
+#metadata:
+#  name: test-ingress-aviot
+#  namespace: aviot-test-1
+#spec:
+#  rules:
+#  - host: aviottest.com
+#    http:
+#      paths:
+#      - backend:
+#          serviceName: mlvpn-services-agri
+#          servicePort: 5080
+
+        
+        
+        
+        
+        
+        

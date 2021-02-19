@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ros-node
+  labels:
+    app.kubernetes.io/name: ros-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ros-node
+  template:
+    metadata:
+      labels:
+        app: ros-node
+    spec:
+      containers:
+        - name: n2nedgecontainer
+          image: "aviot/n2nimage:latest"
+          command: ["/bin/sh", "-c"]
+          args:
+            # notice -f at end to keep in foreground because its the only command, and NO dhcp client
+            # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
+            # in order to enable P2P fast communication between nearby nodes
+            - /edge -u 0 -g 0 -r -a 10.11.0.3 -c ${COM_NAME} -k ${COM_PASSWORD} -l ${SUPERNODE_URL} -p 42479 -f;
+          #the following is equivalent to running the container as:
+          #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
+        - name: ros-node
+          image: aviot/ros-node:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ROS_MASTER_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: ROS_MASTER_URI
+            - name: ROS_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: ROS_NODE_IP
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ros-node-svc
+spec:
+  type: NodePort
+  selector:
+    app: ros-node
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort:

@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: janus-gateway-services-${TENANT_ID}
+spec:
+  selector:
+    app: janus-gateway
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+
+    - name: admin
+      protocol: TCP
+      port: 7088
+      targetPort: 7088
+
+    - name: janus
+      protocol: TCP
+      port: 8088
+      targetPort: 8088
+
+    - name: ws
+      protocol: TCP
+      port: 8188
+      targetPort: 8188
+
+    - name: https
+      protocol: TCP
+      port: 8089
+      targetPort: 8089
+
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: janus-gateway-deployment-${TENANT_ID}
+  labels:
+    app.kubernetes.io/name: janus-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: janus-gateway
+  template:
+    metadata:
+      labels:
+        app: janus-gateway
+    spec:
+      terminationGracePeriodSeconds: 18000 # TODO: graceful shutdown
+      containers:
+        - image: aviot/janus:latest
+          name: janus-gateway
+          command: ["/opt/janus/bin/janus"]
+          resources:
+            requests:
+              cpu: "1"
+          env:
+            - name: TENANT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: JANUS_TENANT_ID

@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ros-master-services-${TENANT_ID}
+spec:
+  selector:
+    app: ros
+  ports:
+    - name: ros-http
+      protocol: TCP
+      port: 11311
+      targetPort: 11311
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ros-master-deployment-${TENANT_ID}
+  labels:
+    app.kubernetes.io/name: ros-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ros-master
+  template:
+    metadata:
+      labels:
+        app: ros-master
+    spec:
+      containers:
+        - name: n2nedgecontainer
+          image: "aviot/n2nimage:latest"
+          command: ["/bin/sh", "-c"]
+          args:
+            # notice -f at end to keep in foreground because its the only command, and NO dhcp client
+            # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
+            # in order to enable P2P fast communication between nearby nodes
+            - /edge -u 0 -g 0 -r -a $(N2N_IP_ROSCORE) -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p 42479 -f;
+          #the following is equivalent to running the container as:
+          #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
+          env:
+            - name: COM_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: COM_NAME
+            - name: COM_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: COM_PASSWORD
+            - name: SUPERNODE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: SUPERNODE_URL
+            - name: N2N_IP_ROSCORE
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: N2N_IP_ROSCORE
+        - image: ros:kinetic-ros-core
+          name: ros-master
+          command: ["/bin/bash", "-c"]
+          args: ["source ros_entrypoint.sh && roscore -v"]
+          ports:
+            - name: ros
+              containerPort: 11311
+          env:
+            - name: ROS_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: ROS_CORE_IP
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun

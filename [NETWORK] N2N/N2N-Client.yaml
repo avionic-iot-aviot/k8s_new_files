@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n2n-test-client-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-n2n-client
+  template:
+    metadata:
+      labels:
+        app: hello-n2n-client
+    spec:
+      containers:
+        - name: pingcontainer
+          image: alpine:latest
+          command: ["ping"]
+          args: ["10.30.0.1", "-i", "7"]
+          ### DO NOT CHANGE YOUR N2N EDGE SIDECAR, BELOW ###
+        - name: n2nedgecontainer
+          image: "aviot/n2nimage:latest"
+          command: ["/bin/sh", "-c"]
+          args:
+            # keep the dhcp client running in foreground with -f
+            # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
+            # in order to enable P2P fast communication between nearby nodes
+            - /edge -u 0 -g 0 -r -a dhcp:0.0.0.0 -c MeloTest -k MeloTest -l 18.188.136.98:7654 -p 42479;
+              udhcpc -i edge0 -f;
+          #the following is equivalent to running the container as:
+          #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
+          ports:
+            - name: port
+              protocol: UDP
+              containerPort: 42479
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            # directory location on host
+            path: /dev/net/tun
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n2n-test-client-service
+spec:
+  type: NodePort
+  selector:
+    app: hello-n2n-client
+  ports:
+    - protocol: UDP
+      port: 42479
+      name: n2n
+      targetPort: 42479

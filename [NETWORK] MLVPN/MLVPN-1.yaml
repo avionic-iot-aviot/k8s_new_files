@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlvpn-deployment-${TENANT_ID}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlvpn-ok
+  template:
+    metadata:
+      labels:
+        app: mlvpn-ok
+    spec:
+      containers:
+        - name: n2nedgecontainer
+          image: "aviot/n2nimage:latest"
+          command: ["/bin/sh", "-c"]
+          args:
+            # keep the dhcp client running in foreground with -f
+            # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
+            # in order to enable P2P fast communication between nearby nodes
+            - /edge -u 0 -g 0 -r -a dhcp:0.0.0.0 -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p 42479;
+              udhcpc -i edge0 -x hostname:$(DEVICE_NAME) -f;
+          #the following is equivalent to running the container as:
+          #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
+          ports:
+            - name: port
+              protocol: UDP
+              containerPort: 42479
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
+          env:
+            - name: COM_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: COM_NAME
+            - name: COM_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: COM_PASSWORD
+            - name: SUPERNODE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: SUPERNODE_URL
+            - name: DEVICE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-${TENANT_ID}
+                  key: DEVICE_NAME
+        - name: aviot-mlvpn
+          image: carmelor93/aviot-mlvpn:latest
+          args:
+            #- -p 5678:5678 -text="hello world"
+            - --privileged -e VAR_DOCKER_NETWORK='172.16.40' -p 5080:5080/udp --cap-add=NET_ADMIN --device=/dev/net/tun
+          ports:
+            - name: port
+              protocol: UDP
+              containerPort: 5080
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlvpn-services-${TENANT_ID}
+spec:
+  type: NodePort
+  selector:
+    app: mlvpn-ok
+  ports:
+    - protocol: UDP
+      port: 5080
+      name: http
+      targetPort: 5080

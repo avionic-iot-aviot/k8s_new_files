@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlvpn-deployment-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-mlvpn
+  template:
+    metadata:
+      labels:
+        app: hello-mlvpn
+    spec:
+      containers:
+        - name: aviot-mlvpn
+          image: carmelor93/aviot-mlvpn:latest
+          args:
+            #- -p 5678:5678 -text="hello world"
+            - --privileged -e VAR_DOCKER_NETWORK='172.16.40' -p 5080:5080/udp --cap-add=NET_ADMIN --device=/dev/net/tun
+          ports:
+            - name: port
+              protocol: UDP
+              containerPort: 5080
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlvpn-services-test
+spec:
+  type: NodePort
+  selector:
+    app: hello-mlvpn
+  ports:
+    - protocol: UDP
+      port: 5080
+      name: http
+      targetPort: 5080
