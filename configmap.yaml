@@ -1,8 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: configmap-agri
+  name: configmap-aviot
 data:
+  TENANT_ID: "agri"
   COM_NAME: "MeloTest1"
   COM_PASSWORD: "MeloTest1"
   SUPERNODE_URL: "18.188.136.98:7654"
@@ -10,16 +11,13 @@ data:
   IPDB: "localhost"
   IPDNSSERVERAPP: "localhost"
   IPDBAPP: "localhost"
-  IPDNSSERVER: "10.11.0.1"
-  JANUS_SERVICE_HOST: "10.11.0.3"
+  JANUS_SERVICE_HOST: "janus-gateway"
   JANUS_SERVICE_PORT: "8088"
-  ROS_MASTER_SERVICE_HOST: "10.11.0.2"
+  ROS_MASTER_SERVICE_HOST: "ros-master"
   ROS_MASTER_SERVICE_PORT: "11311"
   MONGODB_DATABASE_NAME: "streamingdb"
   MONGODB_SERVICE_HOST: "mongo"
   MONGODB_SERVICE_PORT: "27017"
-  ROS_CORE_IP: "10.11.0.2"
-  ROS_NODE_IP: "10.11.0.3"
   ROS_MASTER_URI: "http://10.11.0.2:11311/"
   JANUS_TENANT_ID: "abcdef"
   WS_NODE_ENV: "production"
@@ -31,3 +29,6 @@ data:
   N2N_IP_MLVPN: "10.11.0.5"
   N2N_IP_GWAPP: "10.11.0.6"
   N2N_IP_FCCS: "10.11.0.7"
+  RESTAPI_SERVICE_HOST: "restapi"
+  RESTAPI_SERVICE_PORT: "5000"
+

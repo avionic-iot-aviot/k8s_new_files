@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dnsserverapp-deployment-${TENANT_ID}
+  name: dnsserverapp-complete
 spec:
   replicas: 1
   selector:
@@ -18,8 +18,8 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             # keep the --listen-address in sync with the /edge -a address below
-            - echo "$(N2N_IP_DNSSERVERAPP) dhcpserver.${TENANT_ID}" >> /etc/hosts;
-              dnsmasq -k --bind-interfaces --listen-address=$(N2N_IP_DNSSERVERAPP) --dhcp-option=3 --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=${TENANT_ID};
+            - echo "$(N2N_IP_DNSSERVERAPP) dhcpserver.$(TENANT_ID)" >> /etc/hosts;
+              dnsmasq -k --bind-interfaces --listen-address=$(N2N_IP_DNSSERVERAPP) --dhcp-option=3 --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$(TENANT_ID);
           # dhcp server needs NET_ADMIN too
           securityContext:
             capabilities:
@@ -33,8 +33,13 @@ spec:
             - name: N2N_IP_DNSSERVERAPP
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: N2N_IP_DNSSERVERAPP
+            - name: TENANT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: TENANT_ID
         ### DO NOT CHANGE YOUR N2N EDGE SIDECAR, BELOW ###
         - name: n2nedgecontainer
           image: "aviot/n2nimage:latest"
@@ -58,22 +63,22 @@ spec:
             - name: COM_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: COM_NAME
             - name: COM_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: COM_PASSWORD
             - name: SUPERNODE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: SUPERNODE_URL
             - name: N2N_IP_DNSSERVERAPP
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: N2N_IP_DNSSERVERAPP
         - name: dbapp
           image: aviot/dbapp:latest
@@ -83,12 +88,12 @@ spec:
             - name: IPDB
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: IPDB
             - name: IPDNSSERVERAPP
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: IPDNSSERVERAPP
         - name: dnsserverapp
           image: aviot/dnsserverapp:latest
@@ -98,13 +103,13 @@ spec:
             - name: IPDBAPP
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: IPDBAPP
             - name: IPDNSSERVER
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
-                  key: IPDNSSERVER
+                  name: configmap-aviot
+                  key: N2N_IP_DNSSERVERAPP
           volumeMounts:
             - name: dnsmasq-shared
               mountPath: /var/lib/misc
@@ -125,7 +130,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: dnsserverapp-services-${TENANT_ID}
+  name: dnsserverapp
 spec:
   type: NodePort
   selector:

@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mlvpn-deployment-${TENANT_ID}
+  name: mlvpn
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mlvpn-ok
+      app: mlvpn
   template:
     metadata:
       labels:
-        app: mlvpn-ok
+        app: mlvpn
     spec:
       containers:
         - name: n2nedgecontainer
@@ -40,32 +40,59 @@ spec:
             - name: COM_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: COM_NAME
             - name: COM_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: COM_PASSWORD
             - name: SUPERNODE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: SUPERNODE_URL
             - name: DEVICE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: DEVICE_NAME
         - name: aviot-mlvpn
           image: carmelor93/aviot-mlvpn:latest
           args:
             #- -p 5678:5678 -text="hello world"
-            - --privileged -e VAR_DOCKER_NETWORK='172.16.40' -p 5080:5080/udp --cap-add=NET_ADMIN --device=/dev/net/tun
+            - --privileged -e VAR_DOCKER_NETWORK='172.16.40' -p 5080-5089:5080-5089/udp --cap-add=NET_ADMIN --device=/dev/net/tun
           ports:
-            - name: port
+            - name: port-80
               protocol: UDP
               containerPort: 5080
+            - name: port-81
+              protocol: UDP
+              containerPort: 5081
+            - name: port-82
+              protocol: UDP
+              containerPort: 5082
+            - name: port-83
+              protocol: UDP
+              containerPort: 5083
+            - name: port-84
+              protocol: UDP
+              containerPort: 5084
+            - name: port-85
+              protocol: UDP
+              containerPort: 5085
+            - name: port-86
+              protocol: UDP
+              containerPort: 5086
+            - name: port-87
+              protocol: UDP
+              containerPort: 5087
+            - name: port-88
+              protocol: UDP
+              containerPort: 5088
+            - name: port-89
+              protocol: UDP
+              containerPort: 5089
           securityContext:
             capabilities:
               add:
@@ -82,13 +109,60 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mlvpn-services-${TENANT_ID}
+  name: mlvpn
 spec:
   type: NodePort
   selector:
-    app: mlvpn-ok
+    app: mlvpn
   ports:
     - protocol: UDP
       port: 5080
-      name: http
+      name: mlvpn-80
       targetPort: 5080
+      nodePort: 30980
+    - protocol: UDP
+      port: 5081
+      name: mlvpn-81
+      targetPort: 5081
+      nodePort: 30981
+    - protocol: UDP
+      port: 5082
+      name: mlvpn-82
+      targetPort: 5082
+      nodePort: 30982
+    - protocol: UDP
+      port: 5083
+      name: mlvpn-83
+      targetPort: 5083
+      nodePort: 30983
+    - protocol: UDP
+      port: 5084
+      name: mlvpn-84
+      targetPort: 5084
+      nodePort: 30984
+    - protocol: UDP
+      port: 5085
+      name: mlvpn-85
+      targetPort: 5085
+      nodePort: 30985
+    - protocol: UDP
+      port: 5086
+      name: mlvpn-86
+      targetPort: 5086
+      nodePort: 30986
+    - protocol: UDP
+      port: 5087
+      name: mlvpn-87
+      targetPort: 5087
+      nodePort: 30987
+    - protocol: UDP
+      port: 5088
+      name: mlvpn-88
+      targetPort: 5088
+      nodePort: 30988
+    - protocol: UDP
+      port: 5089
+      name: mlvpn-89
+      targetPort: 5089
+      nodePort: 30989
+

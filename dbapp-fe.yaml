@@ -14,7 +14,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: dbapp-fe-svc
+  name: dbapp-fe
 spec:
   type: NodePort
   selector:

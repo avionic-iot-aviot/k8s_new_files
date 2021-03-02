@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongo-deployment-${TENANT_ID}
+  name: mongo
 spec:
   selector:
     matchLabels:
@@ -33,7 +33,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongo-services-${TENANT_ID}
+  name: mongo
   labels:
     app: mongo
 spec:
@@ -45,3 +45,4 @@ spec:
       protocol: TCP
       name: dbapp-port
       targetPort: 27017
+      nodePort: 32681

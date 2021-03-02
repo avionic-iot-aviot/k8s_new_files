@@ -72,8 +72,8 @@ COPY ["vpn0-bonding-5.conf","vpn0-bonding-5.sh","/root/mlvpn/cfg/"]
 USER root
 
 #CMD ["sh /root/mlvpn/launch-bonder.sh"]
-RUN chmod 777 /root/mlvpn/launch-bonder-5.sh
-ENTRYPOINT ["/root/mlvpn/launch-bonder-5.sh"]
+RUN chmod 777 /root/mlvpn/launch-bonder.sh
+ENTRYPOINT ["/root/mlvpn/launch-bonder.sh"]
 
 
 #RUN chmod 777 '/root/mlvpn/launch-bonder-5.sh' 

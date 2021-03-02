@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: restapi-deployment-${TENANT_ID}
+  name: restapi
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: restapi-ok
+      app: restapi
   template:
     metadata:
       labels:
-        app: restapi-ok
+        app: restapi
     spec:
       containers:
         - name: rest-api-container
@@ -18,7 +18,7 @@ spec:
           ports:
             - name: port
               protocol: TCP
-              containerPort: 8080
+              containerPort: 5000
           securityContext:
             capabilities:
               add:
@@ -27,49 +27,54 @@ spec:
             - name: JANUS_SERVICE_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: JANUS_SERVICE_HOST
             - name: JANUS_SERVICE_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: JANUS_SERVICE_PORT
             - name: ROS_MASTER_SERVICE_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: ROS_MASTER_SERVICE_HOST
             - name: ROS_MASTER_SERVICE_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: ROS_MASTER_SERVICE_PORT
             - name: MONGODB_DATABASE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: MONGODB_DATABASE_NAME
             - name: MONGODB_SERVICE_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: MONGODB_SERVICE_HOST
             - name: MONGODB_SERVICE_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: MONGODB_SERVICE_PORT
+            - name: JANUS_SERVICE_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_JANUS
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: restapi-services-${TENANT_ID}
+  name: restapi
 spec:
   type: NodePort
   selector:
-    app: restapi-ok
+    app: restapi
   ports:
     - protocol: TCP
-      port: 8080
-      name: http
-      targetPort: 8080
+      port: 5000
+      targetPort: 5000
+      nodePort: 31888

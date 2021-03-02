@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ros-master-services-${TENANT_ID}
+  name: ros-master
 spec:
   selector:
     app: ros
@@ -10,13 +10,14 @@ spec:
       protocol: TCP
       port: 11311
       targetPort: 11311
+      nodePort: 30512
   type: LoadBalancer
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ros-master-deployment-${TENANT_ID}
+  name: ros-master
   labels:
     app.kubernetes.io/name: ros-master
 spec:
@@ -52,22 +53,22 @@ spec:
             - name: COM_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: COM_NAME
             - name: COM_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: COM_PASSWORD
             - name: SUPERNODE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: SUPERNODE_URL
             - name: N2N_IP_ROSCORE
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: N2N_IP_ROSCORE
         - image: ros:kinetic-ros-core
           name: ros-master
@@ -80,8 +81,8 @@ spec:
             - name: ROS_IP
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
-                  key: ROS_CORE_IP
+                  name: configmap-aviot
+                  key: N2N_IP_ROSCORE
       volumes:
         - name: dev-net-tun
           hostPath:

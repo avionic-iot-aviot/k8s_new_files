@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: janus-gateway-services-${TENANT_ID}
+  name: janus-gateway
 spec:
   selector:
     app: janus-gateway
@@ -10,26 +10,31 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 80
+      nodePort: 30913
 
     - name: admin
       protocol: TCP
       port: 7088
       targetPort: 7088
-
+      nodePort: 32759
+      
     - name: janus
       protocol: TCP
       port: 8088
       targetPort: 8088
+      nodePort: 32542
 
     - name: ws
       protocol: TCP
       port: 8188
       targetPort: 8188
+      nodePort: 30607
 
     - name: https
       protocol: TCP
       port: 8089
       targetPort: 8089
+      nodePort: 30005
 
   type: LoadBalancer
 
@@ -37,7 +42,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: janus-gateway-deployment-${TENANT_ID}
+  name: janus-gateway
   labels:
     app.kubernetes.io/name: janus-gateway
 spec:
@@ -52,15 +57,58 @@ spec:
     spec:
       terminationGracePeriodSeconds: 18000 # TODO: graceful shutdown
       containers:
+        - name: n2nedgecontainer
+          image: "aviot/n2nimage:latest"
+          command: ["/bin/sh", "-c"]
+          args:
+            # notice -f at end to keep in foreground because its the only command, and NO dhcp client
+            # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
+            # in order to enable P2P fast communication between nearby nodes
+            - /edge -u 0 -g 0 -r -a $(N2N_IP_JANUS) -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p 42479 -f;
+          #the following is equivalent to running the container as:
+          #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
+          env:
+            - name: COM_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: COM_NAME
+            - name: COM_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: COM_PASSWORD
+            - name: SUPERNODE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: SUPERNODE_URL
+            - name: N2N_IP_JANUS
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_JANUS
         - image: aviot/janus:latest
           name: janus-gateway
-          command: ["/opt/janus/bin/janus"]
-          resources:
-            requests:
-              cpu: "1"
+          #command: ["/opt/janus/bin/janus"]
+          #resources:
+          #  requests:
+          #    cpu: "1"
           env:
             - name: TENANT_ID
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-${TENANT_ID}
+                  name: configmap-aviot
                   key: JANUS_TENANT_ID
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
