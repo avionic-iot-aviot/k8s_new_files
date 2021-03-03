@@ -4,9 +4,9 @@ metadata:
   name: configmap-aviot
 data:
   TENANT_ID: "agri"
-  COM_NAME: "MeloTest1"
-  COM_PASSWORD: "MeloTest1"
-  SUPERNODE_URL: "18.188.136.98:7654"
+  COM_NAME: "${COM_NAME}"
+  COM_PASSWORD: "${COM_PASSWORD}"
+  SUPERNODE_URL: "${SUPERNODE_URL}"
   DEVICE_NAME: "mlvpn"
   IPDB: "localhost"
   IPDNSSERVERAPP: "localhost"
