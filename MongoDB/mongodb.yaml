@@ -19,8 +19,7 @@ spec:
           command: ["mongod"]
           args: ["--dbpath", "/data/db", "--bind_ip_all"]
           ports:
-            - name: mongo
-              containerPort: 27017
+            - containerPort: 27017
 #        volumeMounts:
 #            - name: mongo
 #              mountPath: /data/db
@@ -34,15 +33,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mongo
-  labels:
-    app: mongo
 spec:
   type: NodePort
   selector:
-    run: mongo
+    app: mongo
   ports:
     - port: 27017
       protocol: TCP
-      name: dbapp-port
       targetPort: 27017
       nodePort: 32681
