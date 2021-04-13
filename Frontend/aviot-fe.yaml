@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dbapp-fe
+  name: aviot-fe
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dbapp-fe
+      app: aviot-fe
   template:
     metadata:
       labels:
-        app: dbapp-fe
+        app: aviot-fe
     spec:
       containers:
-        - name: dbapp-fe
+        - name: aviot-fe
           image: aviot/frontend:latest
           ports:
             - containerPort: 8080
@@ -21,11 +21,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: dbapp-fe
+  name: aviot-fe
 spec:
   type: NodePort
   selector:
-    app: dbapp-fe
+    app: aviot-fe
   ports:
     - port: 8080
       targetPort: 8080
