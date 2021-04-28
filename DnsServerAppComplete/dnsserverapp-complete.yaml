@@ -114,6 +114,11 @@ spec:
             - name: dnsmasq-shared
               mountPath: /var/lib/misc
               readOnly: false
+          # needed to call the iptables commands
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
       volumes:
         - name: dnsmasq-shared
           emptyDir: {}
