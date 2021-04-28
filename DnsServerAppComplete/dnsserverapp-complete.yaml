@@ -19,7 +19,7 @@ spec:
           args:
             # keep the --listen-address in sync with the /edge -a address below
             - echo "$(N2N_IP_DNSSERVERAPP) dhcpserver.$(TENANT_ID)" >> /etc/hosts;
-              dnsmasq -k --bind-interfaces --listen-address=$(N2N_IP_DNSSERVERAPP) --dhcp-option=3 --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$(TENANT_ID);
+              dnsmasq -k --bind-interfaces --listen-address=$(N2N_IP_DNSSERVERAPP) --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$(TENANT_ID);
           # dhcp server needs NET_ADMIN too
           securityContext:
             capabilities:
@@ -114,6 +114,11 @@ spec:
             - name: dnsmasq-shared
               mountPath: /var/lib/misc
               readOnly: false
+          # needed to call the iptables commands
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
       volumes:
         - name: dnsmasq-shared
           emptyDir: {}
