@@ -95,4 +95,4 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
-      nodePort: 32766
+      #nodePort: 32766

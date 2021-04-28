@@ -10,13 +10,13 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 8080
-      nodePort: 31015
+      #nodePort: 31015
 
     - name: https
       protocol: TCP
       port: 443
       targetPort: 8080
-      nodePort: 30785
+      #nodePort: 30785
 
   type: LoadBalancer
 

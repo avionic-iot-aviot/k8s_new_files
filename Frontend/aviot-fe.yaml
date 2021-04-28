@@ -17,6 +17,37 @@ spec:
           image: aviot/frontend:latest
           ports:
             - containerPort: 8080
+          env:
+            - name: JANUS_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: JANUS_SERVICE_HOST
+            - name: JANUS_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: JANUS_SERVICE_PORT
+            - name: WSS_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: WSS_SERVICE_HOST
+            - name: WSS_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: WSS_SERVICE_PORT
+            - name: DBAPP_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: DBAPP_SERVICE_HOST
+            - name: DBAPP_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: DBAPP_SERVICE_PORT
 ---
 apiVersion: v1
 kind: Service
@@ -29,4 +60,4 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
-      nodePort: 30000
+      #nodePort: 30000
