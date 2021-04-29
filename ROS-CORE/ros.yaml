@@ -11,7 +11,7 @@ spec:
       port: 11311
       targetPort: 11311
       #nodePort: 30512
-  type: LoadBalancer
+  type: NodePort
 
 ---
 apiVersion: apps/v1
