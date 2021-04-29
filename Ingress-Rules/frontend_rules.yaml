@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: fe-first-level-rules
+  name: ${TENANT_ID}-fe-first-level-rules
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
@@ -12,7 +12,7 @@ spec:
   - host: apps.aviot.it
     http:
         paths:
-          - path: /${TENANT_ID}
+          - path: /agri
             pathType: Prefix
             backend:
               serviceName: aviot-fe
@@ -32,22 +32,17 @@ spec:
     - host: apps.aviot.it
       http:
         paths:
-          - path: /${TENANT_ID}/fe
-            pathType: Prefix
-            backend:
-              serviceName: aviot-fe
-              servicePort: 8080
-          - path: /${TENANT_ID}/janus
+          - path: /${TENANT_ID}/janus(/|$)(.*)
             pathType: Prefix
             backend:
               serviceName: janus-gateway
               servicePort: 8088
-          - path: /${TENANT_ID}/dbapp
+          - path: /${TENANT_ID}/dbapp(/|$)(.*)
             pathType: Prefix
             backend:
               serviceName: dnsserverapp
               servicePort: 4000
-          - path: /${TENANT_ID}/wss
+          - path: /${TENANT_ID}/wss(/|$)(.*)
             pathType: Prefix
             backend:
               serviceName: wss
