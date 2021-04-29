@@ -12,34 +12,7 @@ spec:
       labels:
         app: dnsserverapp-complete
     spec:
-      containers:
-        - name: dnsmasqcontainer
-          image: andyshinn/dnsmasq:latest
-          command: ["/bin/sh", "-c"]
-          args:
-            # keep the --listen-address in sync with the /edge -a address below
-            - echo "$(N2N_IP_DNSSERVERAPP) dhcpserver.$(TENANT_ID)" >> /etc/hosts;
-              dnsmasq -k --bind-interfaces --listen-address=$(N2N_IP_DNSSERVERAPP) --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$(TENANT_ID);
-          # dhcp server needs NET_ADMIN too
-          securityContext:
-            capabilities:
-              add:
-                - NET_ADMIN
-          volumeMounts:
-            - name: dnsmasq-shared
-              mountPath: /var/lib/misc
-              readOnly: false
-          env:
-            - name: N2N_IP_DNSSERVERAPP
-              valueFrom:
-                configMapKeyRef:
-                  name: configmap-aviot
-                  key: N2N_IP_DNSSERVERAPP
-            - name: TENANT_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: configmap-aviot
-                  key: TENANT_ID
+      containers:            
         ### DO NOT CHANGE YOUR N2N EDGE SIDECAR, BELOW ###
         - name: n2nedgecontainer
           image: "aviot/n2nimage:latest"
@@ -110,18 +83,22 @@ spec:
                 configMapKeyRef:
                   name: configmap-aviot
                   key: N2N_IP_DNSSERVERAPP
-          volumeMounts:
-            - name: dnsmasq-shared
-              mountPath: /var/lib/misc
-              readOnly: false
+            - name: N2N_IP_DNSSERVERAPP
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_DNSSERVERAPP
+            - name: TENANT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: TENANT_ID
           # needed to call the iptables commands
           securityContext:
             capabilities:
               add:
                 - NET_ADMIN
       volumes:
-        - name: dnsmasq-shared
-          emptyDir: {}
         - name: folder-for-mysql
           hostPath:
             path: /home/andrea/Folder_for_mySQL
