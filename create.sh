@@ -18,4 +18,4 @@ kubectl apply -n $4 -f ROS-CORE/ros.yaml
 kubectl apply -n $4 -f ROS-NODE-JS/ros-node.yaml
 kubectl apply -n $4 -f VideoServer/janus.yaml
 kubectl apply -n $4 -f WebSoketServer/ws-server.yaml
-
+kubectl apply -n $4 -f Ingress-Rules/ingress_rules.yaml
