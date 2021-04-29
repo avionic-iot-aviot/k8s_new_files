@@ -12,7 +12,7 @@ spec:
   - host: apps.aviot.it
     http:
         paths:
-          - path: /agri
+          - path: /${TENANT_ID}
             pathType: Prefix
             backend:
               serviceName: aviot-fe
@@ -29,20 +29,25 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
   rules:
-  - host: apps.aviot.it
-    http:
+    - host: apps.aviot.it
+      http:
         paths:
-          - path: /agri/janus
+          - path: /${TENANT_ID}/fe
+            pathType: Prefix
+            backend:
+              serviceName: aviot-fe
+              servicePort: 8080
+          - path: /${TENANT_ID}/janus
             pathType: Prefix
             backend:
               serviceName: janus-gateway
               servicePort: 8088
-          - path: /agri/dbapp
+          - path: /${TENANT_ID}/dbapp
             pathType: Prefix
             backend:
               serviceName: dnsserverapp
               servicePort: 4000
-          - path: /agri/wss
+          - path: /${TENANT_ID}/wss
             pathType: Prefix
             backend:
               serviceName: wss
