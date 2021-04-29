@@ -7,7 +7,7 @@ fi
 
 kubectl create namespace $4
 
-COM_NAME=$1 COM_PASSWORD=$2 SUPERNODE_URL=$3 envsubst < configmap.yaml | kubectl apply -n $4 -f -
+COM_NAME=$1 COM_PASSWORD=$2 SUPERNODE_URL=$3 TENANT_ID=$4 envsubst < configmap.yaml | kubectl apply -n $4 -f -
 kubectl apply -n $4 -f DnsServerAppComplete/dnsserverapp-complete.yaml
 kubectl apply -n $4 -f Frontend/aviot-fe.yaml
 kubectl apply -n $4 -f MLVPN/MLVPN.yaml

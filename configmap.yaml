@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: configmap-aviot
 data:
-  TENANT_ID: "agri"
+  TENANT_ID: "${TENANT_ID}"
   COM_NAME: "${COM_NAME}"
   COM_PASSWORD: "${COM_PASSWORD}"
   SUPERNODE_URL: "${SUPERNODE_URL}"
