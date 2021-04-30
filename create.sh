@@ -1,11 +1,13 @@
 #!/bin/bash
 
-if [ "$#" -ne 4 ]; then
-  echo "Usage: create.sh COM_NAME COM_PASSWORD SUPERNODE_URL NAMESPACE" >&2
+if [ "$#" -ne 5 ]; then
+  echo "Usage: create.sh COM_NAME COM_PASSWORD SUPERNODE_URL NAMESPACE DNS_SERVER_ADDRESS" >&2
   exit 1
 fi
 
 kubectl create namespace $4
+
+#DNS_SERVER_ADDRESS=$5
 
 COM_NAME=$1 COM_PASSWORD=$2 SUPERNODE_URL=$3 TENANT_ID=$4 envsubst < configmap.yaml | kubectl apply -n $4 -f -
 kubectl apply -n $4 -f DnsServerAppComplete/dnsserverapp-complete.yaml
