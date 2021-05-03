@@ -132,50 +132,49 @@ spec:
       port: 5080
       name: mlvpn-80
       targetPort: 5080
-      nodePort: 30980
     - protocol: UDP
       port: 5081
       name: mlvpn-81
       targetPort: 5081
-      nodePort: 30981
+      # nodePort: 30981
     - protocol: UDP
       port: 5082
       name: mlvpn-82
       targetPort: 5082
-      nodePort: 30982
+      # nodePort: 30982
     - protocol: UDP
       port: 5083
       name: mlvpn-83
       targetPort: 5083
-      nodePort: 30983
+      # nodePort: 30983
     - protocol: UDP
       port: 5084
       name: mlvpn-84
       targetPort: 5084
-      nodePort: 30984
+      # nodePort: 30984
     - protocol: UDP
       port: 5085
       name: mlvpn-85
       targetPort: 5085
-      nodePort: 30985
+      # nodePort: 30985
     - protocol: UDP
       port: 5086
       name: mlvpn-86
       targetPort: 5086
-      nodePort: 30986
+      # nodePort: 30986
     - protocol: UDP
       port: 5087
       name: mlvpn-87
       targetPort: 5087
-      nodePort: 30987
+      # nodePort: 30987
     - protocol: UDP
       port: 5088
       name: mlvpn-88
       targetPort: 5088
-      nodePort: 30988
+      # nodePort: 30988
     - protocol: UDP
       port: 5089
       name: mlvpn-89
       targetPort: 5089
-      nodePort: 30989
+      # nodePort: 30989
 

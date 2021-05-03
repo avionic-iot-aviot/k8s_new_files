@@ -1,18 +1,17 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ${TENANT_ID}-first-level-rules
+  name: ${TENANT_ID}-frontend
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: apps.aviot.it
+    - host: ${TENANT_ID}.aviot.it
       http:
         paths:
-          - path: /${TENANT_ID}
+          - path: /
             pathType: Prefix
             backend:
               serviceName: aviot-fe
@@ -21,7 +20,28 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ${TENANT_ID}-second-level-rules
+  name: ${TENANT_ID}-websocket
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  rules:
+    - host: ${TENANT_ID}.aviot.it
+      http:
+        paths:
+          - path: /socket.io(/|$)(.*)
+            pathType: Prefix
+            backend:
+              serviceName: wss
+              servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${TENANT_ID}-services
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
@@ -29,21 +49,16 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
   rules:
-    - host: apps.aviot.it
+    - host: ${TENANT_ID}.aviot.it
       http:
         paths:
-          - path: /${TENANT_ID}/janus(/|$)(.*)
+          - path: /janus(/|$)(.*)
             pathType: Prefix
             backend:
               serviceName: janus-gateway
               servicePort: 8088
-          - path: /${TENANT_ID}/dbapp(/|$)(.*)
+          - path: /dbapp(/|$)(.*)
             pathType: Prefix
             backend:
               serviceName: dnsserverapp
               servicePort: 4000
-          - path: /${TENANT_ID}/wss(/|$)(.*)
-            pathType: Prefix
-            backend:
-              serviceName: wss
-              servicePort: 80
