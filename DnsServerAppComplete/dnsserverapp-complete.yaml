@@ -21,7 +21,7 @@ spec:
             # notice -f at end to keep in foreground because its the only command, and NO dhcp client
             # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
             # in order to enable P2P fast communication between nearby nodes
-            - /edge -u 0 -g 0 -r -a $(N2N_IP_DNSSERVERAPP) -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p 42479 -f;
+            - /edge -u 0 -g 0 -r -a $(N2N_IP_DNSSERVERAPP) -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p $(SUPERNODE_PORT_UDP) -f;
           #the following is equivalent to running the container as:
           #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
           securityContext:
@@ -48,6 +48,11 @@ spec:
                 configMapKeyRef:
                   name: configmap-aviot
                   key: SUPERNODE_URL
+            - name: SUPERNODE_PORT_UDP
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: SUPERNODE_PORT_UDP
             - name: N2N_IP_DNSSERVERAPP
               valueFrom:
                 configMapKeyRef:

@@ -5,11 +5,18 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
+# DELETE CONFIGMAP
 kubectl delete configmap -n $1 configmap-aviot
 
+# DELETE RESOURCES
 kubectl delete --all deployment -n $1
 kubectl delete --all service -n $1
 kubectl delete --all ingress -n $1
+
+# DELETE NAMESPACE
+# NOTE: This is DESTRUCTIVE! It deletes EVERY resource added to
+# the given namespace. USE ONLY IF NEEDED!
+kubectl delete namespaces $4
 
 # kubectl delete deployment -n $1 aviot-fe
 # kubectl delete deployment -n $1 dnsserverapp-complete

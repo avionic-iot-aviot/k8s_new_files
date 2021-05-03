@@ -7,6 +7,7 @@ data:
   COM_NAME: "${COM_NAME}"
   COM_PASSWORD: "${COM_PASSWORD}"
   SUPERNODE_URL: "${SUPERNODE_URL}"
+  SUPERNODE_PORT_UDP: "42479"
   DEVICE_NAME: "mlvpn"
   IPDB: "localhost"
   IPDNSSERVERAPP: "localhost"

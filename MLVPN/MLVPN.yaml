@@ -20,7 +20,7 @@ spec:
             # keep the dhcp client running in foreground with -f
             # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
             # in order to enable P2P fast communication between nearby nodes
-            - /edge -u 0 -g 0 -r -a dhcp:0.0.0.0 -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p 42479;
+            - /edge -u 0 -g 0 -r -a $(N2N_IP_MLVPN) -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p $(SUPERNODE_PORT_UDP);
               udhcpc -i edge0 -x hostname:$(DEVICE_NAME) -f;
           #the following is equivalent to running the container as:
           #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
@@ -37,6 +37,11 @@ spec:
               name: dev-net-tun
               readOnly: true
           env:
+            - name: N2N_IP_MLVPN
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_MLVPN
             - name: COM_NAME
               valueFrom:
                 configMapKeyRef:
@@ -52,6 +57,11 @@ spec:
                 configMapKeyRef:
                   name: configmap-aviot
                   key: SUPERNODE_URL
+            - name: SUPERNODE_PORT_UDP
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: SUPERNODE_PORT_UDP
             - name: DEVICE_NAME
               valueFrom:
                 configMapKeyRef:
@@ -101,6 +111,9 @@ spec:
             - mountPath: "/dev/net/tun"
               name: dev-net-tun
               readOnly: true
+      dnsConfig:
+        nameservers:
+          - ${DNS_SERVER_ADDRESS}
       volumes:
         - name: dev-net-tun
           hostPath:
