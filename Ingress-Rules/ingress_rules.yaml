@@ -5,17 +5,36 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
     - host: ${TENANT_ID}.aviot.it
       http:
         paths:
-          - path: /
+          - path: /frontend(/|$)(.*)
             pathType: Prefix
             backend:
               serviceName: aviot-fe
               servicePort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${TENANT_ID}-janus
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: ${TENANT_ID}.aviot.it
+      http:
+        paths:
+          - path: /janus(/|$)(.*)
+            pathType: Prefix
+            backend:
+              serviceName: janus-gateway
+              servicePort: 8088
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -32,7 +51,7 @@ spec:
     - host: ${TENANT_ID}.aviot.it
       http:
         paths:
-          - path: /socket.io(/|$)(.*)
+          - path: /
             pathType: Prefix
             backend:
               serviceName: wss
@@ -41,7 +60,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ${TENANT_ID}-services
+  name: ${TENANT_ID}-dbapp
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
@@ -52,11 +71,6 @@ spec:
     - host: ${TENANT_ID}.aviot.it
       http:
         paths:
-          - path: /janus(/|$)(.*)
-            pathType: Prefix
-            backend:
-              serviceName: janus-gateway
-              servicePort: 8088
           - path: /dbapp(/|$)(.*)
             pathType: Prefix
             backend:
