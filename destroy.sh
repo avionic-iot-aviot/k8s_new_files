@@ -16,7 +16,7 @@ kubectl delete --all ingress -n $1
 # DELETE NAMESPACE
 # NOTE: This is DESTRUCTIVE! It deletes EVERY resource added to
 # the given namespace. USE ONLY IF NEEDED!
-kubectl delete namespaces $4
+kubectl delete namespaces $1
 
 # kubectl delete deployment -n $1 aviot-fe
 # kubectl delete deployment -n $1 dnsserverapp-complete
