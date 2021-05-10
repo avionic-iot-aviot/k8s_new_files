@@ -103,6 +103,9 @@ spec:
             capabilities:
               add:
                 - NET_ADMIN
+      dnsConfig:
+        nameservers:
+          - "127.0.0.1"
       volumes:
         - name: folder-for-mysql
           hostPath:
