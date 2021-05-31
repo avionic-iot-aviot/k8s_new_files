@@ -32,3 +32,9 @@ DNS_SERVER_ADDRESS=$5 envsubst < VideoServer/janus.yaml | kubectl apply -n $4 -f
 
 # INGRESS RULES
 TENANT_ID=$4 envsubst < Ingress-Rules/ingress_rules.yaml | kubectl apply -n $4 -f -
+
+# ISSUERS
+TENANT_ID=$4 envsubst < Issuer/letsencrypt.yaml | kubectl apply -n $4 -f -
+
+# CERTIFICATE
+TENANT_ID=$4 envsubst < Certificate/certificate.yaml | kubectl apply -n $4 -f -
