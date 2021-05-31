@@ -93,6 +93,26 @@ spec:
                 configMapKeyRef:
                   name: configmap-aviot
                   key: N2N_IP_DNSSERVERAPP
+            - name: N2N_IP_ROSCORE
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_ROSCORE
+            - name: N2N_IP_JANUS
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_JANUS
+            - name: N2N_IP_ROSNODEJS
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_ROSNODEJS
+            - name: N2N_IP_MLVPN
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_MLVPN
             - name: TENANT_ID
               valueFrom:
                 configMapKeyRef:
