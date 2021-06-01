@@ -25,11 +25,6 @@ DNS_SERVER_ADDRESS=$5 envsubst < ROS-CORE/ros.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < ROS-NODE-JS/ros-node.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < VideoServer/janus.yaml | kubectl apply -n $4 -f -
 
-# kubectl apply -n $4 -f MLVPN/MLVPN.yaml
-# kubectl apply -n $4 -f ROS-CORE/ros.yaml
-# kubectl apply -n $4 -f ROS-NODE-JS/ros-node.yaml
-# kubectl apply -n $4 -f VideoServer/janus.yaml
-
 # INGRESS RULES
 TENANT_ID=$4 envsubst < Ingress-Rules/ingress_rules.yaml | kubectl apply -n $4 -f -
 
