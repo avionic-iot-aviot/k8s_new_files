@@ -11,7 +11,7 @@ kubectl create namespace $4
 COM_NAME=$1 COM_PASSWORD=$2 SUPERNODE_URL=$3 TENANT_ID=$4 envsubst < configmap.yaml | kubectl apply -n $4 -f -
 
 # NORMAL PODS
-#kubectl apply -n $4 -f DnsServerAppComplete/dnsserverapp-complete.yaml
+kubectl apply -n $4 -f DnsServerAppComplete/dnsserverapp-complete.yaml
 kubectl apply -n $4 -f Frontend/aviot-fe.yaml
 kubectl apply -n $4 -f MongoDB/mongodb.yaml
 kubectl apply -n $4 -f REDIS/redis.yaml
@@ -30,6 +30,3 @@ TENANT_ID=$4 envsubst < Ingress-Rules/ingress_rules.yaml | kubectl apply -n $4 -
 
 # ISSUERS
 TENANT_ID=$4 envsubst < Issuer/letsencrypt.yaml | kubectl apply -n $4 -f -
-
-# CERTIFICATE
-TENANT_ID=$4 envsubst < Certificate/certificate.yaml | kubectl apply -n $4 -f -
