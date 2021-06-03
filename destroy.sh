@@ -12,7 +12,7 @@ kubectl delete configmap -n $1 configmap-aviot
 kubectl delete --all deployment -n $1
 kubectl delete --all service -n $1
 kubectl delete --all ingress -n $1
-kubectl delete --all clusterissuer -n $1
+kubectl delete --all issuer -n $1
 kubectl delete --all certificate -n $1
 kubectl delete --all secrets -n $1
 
