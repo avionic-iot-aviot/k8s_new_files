@@ -6,12 +6,12 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-    cert-manager.io/issuer: "letsencrypt-issuer"
+    cert-manager.io/issuer: letsencrypt-issuer
 spec:
-  # tls:
-  #   - hosts:
-  #     - ${TENANT_ID}.aviot.it
-  #     secretName: ${TENANT_ID}-letsencrypt-cert-tls
+  tls:
+    - hosts:
+      - ${TENANT_ID}.aviot.it
+      secretName: ${TENANT_ID}-letsencrypt-cert-tls
   rules:
     - host: ${TENANT_ID}.aviot.it
       http:
@@ -30,12 +30,12 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-    cert-manager.io/issuer: "letsencrypt-issuer"
+    cert-manager.io/issuer: letsencrypt-issuer
 spec:
-  # tls:
-  #   - hosts:
-  #     - ${TENANT_ID}.aviot.it
-  #     secretName: ${TENANT_ID}-letsencrypt-cert-tls
+  tls:
+    - hosts:
+      - ${TENANT_ID}.aviot.it
+      secretName: ${TENANT_ID}-letsencrypt-cert-tls
   rules:
     - host: ${TENANT_ID}.aviot.it
       http:
@@ -56,12 +56,12 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    cert-manager.io/issuer: "letsencrypt-issuer"
+    cert-manager.io/issuer: letsencrypt-issuer
 spec:
-  # tls:
-  #   - hosts:
-  #     - ${TENANT_ID}.aviot.it
-  #     secretName: ${TENANT_ID}-letsencrypt-cert-tls
+  tls:
+    - hosts:
+      - ${TENANT_ID}.aviot.it
+      secretName: ${TENANT_ID}-letsencrypt-cert-tls
   rules:
     - host: ${TENANT_ID}.aviot.it
       http:
@@ -81,12 +81,12 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    cert-manager.io/issuer: "letsencrypt-issuer"
+    cert-manager.io/issuer: letsencrypt-issuer
 spec:
-  # tls:
-  #   - hosts:
-  #     - ${TENANT_ID}.aviot.it
-  #     secretName: ${TENANT_ID}-letsencrypt-cert-tls
+  tls:
+    - hosts:
+      - ${TENANT_ID}.aviot.it
+      secretName: ${TENANT_ID}-letsencrypt-cert-tls
   rules:
     - host: ${TENANT_ID}.aviot.it
       http:

@@ -10,31 +10,31 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 80
-      #nodePort: 30913
+      nodePort:
 
     - name: admin
       protocol: TCP
       port: 7088
       targetPort: 7088
-      #nodePort: 32759
+      nodePort:
       
     - name: janus
       protocol: TCP
       port: 8088
       targetPort: 8088
-      #nodePort: 32542
+      nodePort: 
 
     - name: ws
       protocol: TCP
       port: 8188
       targetPort: 8188
-      #nodePort: 30607
+      nodePort:
 
     - name: https
       protocol: TCP
       port: 8089
       targetPort: 8089
-      #nodePort: 30005
+      nodePort:
 
   type: NodePort
 
