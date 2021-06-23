@@ -18,36 +18,11 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: JANUS_SERVICE_HOST
+            - name: MAPS_API_KEY
               valueFrom:
                 configMapKeyRef:
                   name: configmap-aviot
-                  key: JANUS_SERVICE_HOST
-            - name: JANUS_SERVICE_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: configmap-aviot
-                  key: JANUS_SERVICE_PORT
-            - name: WSS_SERVICE_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: configmap-aviot
-                  key: WSS_SERVICE_HOST
-            - name: WSS_SERVICE_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: configmap-aviot
-                  key: WSS_SERVICE_PORT
-            - name: DBAPP_SERVICE_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: configmap-aviot
-                  key: DBAPP_SERVICE_HOST
-            - name: DBAPP_SERVICE_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: configmap-aviot
-                  key: DBAPP_SERVICE_PORT
+                  key: MAPS_API_KEY
 ---
 apiVersion: v1
 kind: Service
