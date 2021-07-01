@@ -66,6 +66,7 @@ spec:
             - mountPath: "/dev/net/tun"
               name: dev-net-tun
               readOnly: true
+          resources: {}
         - image: aviot/sdn-wise-controller:latest
           imagePullPolicy: Always
           name: sdn-wise-controller
@@ -78,6 +79,7 @@ spec:
             - mountPath: "/dev/net/tun"
               name: dev-net-tun
               readOnly: true
+          resources: {}
       dnsConfig:
         nameservers:
           - ${DNS_SERVER_ADDRESS}
