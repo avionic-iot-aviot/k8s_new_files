@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sdn-wise-controller
+  labels:
+    app.kubernetes.io/name: sdn-wise-controller
 spec:
   replicas: 1
   selector:
@@ -17,26 +19,21 @@ spec:
           image: "aviot/n2nimage:latest"
           command: ["/bin/sh", "-c"]
           args:
-            # keep the dhcp client running in foreground with -f
+            # notice -f at end to keep in foreground because its the only command, and NO dhcp client
             # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
             # in order to enable P2P fast communication between nearby nodes
             - /edge -u 0 -g 0 -r -a $(N2N_IP_CONTROLLER) -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p $(SUPERNODE_PORT_UDP) && ping ${DNS_SERVER_ADDRESS} -n -i 2;
           #the following is equivalent to running the container as:
           #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
-          ports:
-            - name: port
-              protocol: UDP
-              containerPort: 42479
           securityContext:
             capabilities:
               add:
                 - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
           env:
-            - name: N2N_IP_CONTROLLER
-              valueFrom:
-                configMapKeyRef:
-                  name: configmap-aviot
-                  key: N2N_IP_CONTROLLER
             - name: COM_NAME
               valueFrom:
                 configMapKeyRef:
@@ -57,29 +54,16 @@ spec:
                 configMapKeyRef:
                   name: configmap-aviot
                   key: SUPERNODE_PORT_UDP
-            - name: DEVICE_NAME
+            - name: N2N_IP_CONTROLLER
               valueFrom:
                 configMapKeyRef:
                   name: configmap-aviot
-                  key: DEVICE_NAME
-          volumeMounts:
-            - mountPath: "/dev/net/tun"
-              name: dev-net-tun
-              readOnly: true
-          resources: {}
-        - image: aviot/sdn-wise-controller:latest
-          imagePullPolicy: Always
-          name: sdn-wise-controller
+                  key: N2N_IP_CONTROLLER
+        - name: sdn-wise-controller
+          image: aviot/sdn-wise-controller:latest
           ports:
-          - containerPort: 3000
-            protocol: TCP
-          - containerPort: 5000
-            protocol: TCP
-          volumeMounts:
-            - mountPath: "/dev/net/tun"
-              name: dev-net-tun
-              readOnly: true
-          resources: {}
+            - containerPort: 3000
+            - containerPort: 5000
       dnsConfig:
         nameservers:
           - ${DNS_SERVER_ADDRESS}
@@ -97,11 +81,11 @@ spec:
   selector:
     app: sdn-wise-controller
   ports:
-    - name: port-socket
-      port: 3000
+    - port: 3000
       targetPort: 3000
       nodePort: 30030
-    - name: port-sink
-      port: 5000
+      name: port-3000
+    - port: 5000
       targetPort: 5000
       nodePort: 30050
+      name: port-5000
