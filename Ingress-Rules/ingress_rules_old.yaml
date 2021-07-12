@@ -5,7 +5,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
     cert-manager.io/issuer: letsencrypt-issuer
 spec:
   tls:
@@ -16,7 +16,7 @@ spec:
     - host: ${TENANT_ID}.aviot.it
       http:
         paths:
-          - path: /
+          - path: /frontend(/|$)(.*)
             pathType: Prefix
             backend:
               serviceName: aviot-fe
@@ -49,7 +49,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ${TENANT_ID}-wss
+  name: ${TENANT_ID}-websocket
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
@@ -60,36 +60,10 @@ metadata:
 spec:
   tls:
     - hosts:
-      - ${TENANT_ID}.wss.aviot.it
+      - ${TENANT_ID}.aviot.it
       secretName: ${TENANT_ID}-letsencrypt-cert-tls
   rules:
-    - host: ${TENANT_ID}.wss.aviot.it
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              serviceName: wss
-              servicePort: 80
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: ${TENANT_ID}-controller
-  annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    cert-manager.io/issuer: letsencrypt-issuer
-spec:
-  tls:
-    - hosts:
-      - ${TENANT_ID}.controller.aviot.it
-      secretName: ${TENANT_ID}-letsencrypt-cert-tls
-  rules:
-    - host: ${TENANT_ID}.controller.aviot.it
+    - host: ${TENANT_ID}.aviot.it
       http:
         paths:
           - path: /
