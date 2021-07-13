@@ -31,8 +31,8 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              serviceName: wss
-              servicePort: 80
+              serviceName: controller
+              servicePort: 3000
     - host: wss.${TENANT_ID}.aviot.it
       http:
         paths:

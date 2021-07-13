@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ "$#" -ne 5 ]; then
-  echo "Usage: create.sh COM_NAME COM_PASSWORD SUPERNODE_URL NAMESPACE DNS_SERVER_ADDRESS" >&2
+if [ "$#" -ne 6 ]; then
+  echo "Usage: create.sh COM_NAME COM_PASSWORD SUPERNODE_URL NAMESPACE DNS_SERVER_ADDRESS UDP_REMOTE_CONTROLLER_PORT" >&2
   exit 1
 fi
 
@@ -23,7 +23,6 @@ DNS_SERVER_ADDRESS=$5 envsubst < MLVPN/MLVPN.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < ROS-CORE/ros.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < ROS-NODE-JS/ros-node.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < VideoServer/janus.yaml | kubectl apply -n $4 -f -
-DNS_SERVER_ADDRESS=$5 envsubst < SDN-Wise-Controller/sdn-wise-controller.yaml | kubectl apply -n $4 -f -
 
 # INGRESS RULES
 TENANT_ID=$4 envsubst < Ingress-Rules/ingress_rules.yaml | kubectl apply -n $4 -f -
