@@ -15,7 +15,7 @@ kubectl apply -n $4 -f Frontend/aviot-fe.yaml
 kubectl apply -n $4 -f MongoDB/mongodb.yaml
 kubectl apply -n $4 -f REDIS/redis.yaml
 kubectl apply -n $4 -f REST-API/rest-api.yaml
-kubectl apply -n $4 -f WebSoketServer/ws-server.yaml
+UDP_REMOTE_CONTROLLER_PORT=$6 envsubst < WebSoketServer/ws-server.yaml | kubectl apply -n $4 -f -
 
 # PODS WITH N2N ADDRESS
 DNS_SERVER_ADDRESS=$5 envsubst < DnsServerAppComplete/dnsserverapp-complete.yaml | kubectl apply -n $4 -f -
