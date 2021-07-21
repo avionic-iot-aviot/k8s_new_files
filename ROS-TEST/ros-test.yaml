@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ros-node
+  name: ros-test-${NUMBER}
   labels:
-    app.kubernetes.io/name: ros-node
+    app.kubernetes.io/name: ros-test-${NUMBER}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ros-node
+      app: ros-test-${NUMBER}
   template:
     metadata:
       labels:
-        app: ros-node
+        app: ros-test-${NUMBER}
     spec:
       containers:
         - name: n2nedgecontainer
@@ -22,7 +22,7 @@ spec:
             # notice -f at end to keep in foreground because its the only command, and NO dhcp client
             # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
             # in order to enable P2P fast communication between nearby nodes
-            - /edge -u 0 -g 0 -r -a $(N2N_IP_ROSNODEJS) -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p $(SUPERNODE_PORT_UDP) && ping ${DNS_SERVER_ADDRESS} -n -i 2;
+            - /edge -u 0 -g 0 -r -a $(N2N_IP_ROSTEST) -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p $(SUPERNODE_PORT_UDP) && ping ${DNS_SERVER_ADDRESS} -n -i 2;
           #the following is equivalent to running the container as:
           #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
           securityContext:
@@ -54,13 +54,13 @@ spec:
                 configMapKeyRef:
                   name: configmap-aviot
                   key: SUPERNODE_PORT_UDP
-            - name: N2N_IP_ROSNODEJS
+            - name: N2N_IP_ROSTEST
               valueFrom:
                 configMapKeyRef:
                   name: configmap-aviot
-                  key: N2N_IP_ROSNODEJS
-        - name: ros-node
-          image: aviot/ros-node:latest
+                  key: N2N_IP_ROSTEST${NUMBER}
+        - name: ros-test
+          image: aviot/ros-test:latest
           ports:
             - containerPort: 8080
           env:
@@ -73,7 +73,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: configmap-aviot
-                  key: N2N_IP_ROSNODEJS
+                  key: N2N_IP_ROSTEST${NUMBER}
             - name: RESTAPI_SERVICE_HOST
               valueFrom:
                 configMapKeyRef:
@@ -84,17 +84,8 @@ spec:
                 configMapKeyRef:
                   name: configmap-aviot
                   key: RESTAPI_SERVICE_PORT
-        - name: sdn-wise-controller
-          image: aviot/sdn-wise-controller:latest
-          ports:
-            - containerPort: 3000
-            - containerPort: 5000
-        - name: sntpserver
-          image: "aviot/sntpserver:latest"
-          command: ["/root/sntpserver", "9999"]
-          ports:
-            - containerPort: 9999
-              protocol: UDP
+            - name: TEST_NUMBER
+              value: "${NUMBER}"
       dnsConfig:
         nameservers:
           - ${DNS_SERVER_ADDRESS}
@@ -106,42 +97,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ros-node
+  name: ros-test-${NUMBER}
 spec:
   type: NodePort
   selector:
-    app: ros-node
+    app: ros-test-${NUMBER}
   ports:
     - port: 8080
       targetPort: 8080
-      #nodePort: 32766
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: controller
-spec:
-  type: NodePort
-  selector:
-    app: ros-node
-  ports:
-    - port: 3000
-      targetPort: 3000
-      name: port-socket
-    - port: 5000
-      targetPort: 5000
-      name: port-sink
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: sntpserver
-spec:
-  type: NodePort
-  selector:
-    app: ros-node
-  ports:
-    - port: 9999
-      targetPort: 9999
-      protocol: UDP
-
