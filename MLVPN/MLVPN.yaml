@@ -67,7 +67,7 @@ spec:
                   name: configmap-aviot
                   key: DEVICE_NAME
         - name: aviot-mlvpn
-          image: carmelor93/aviot-mlvpn:latest
+          image: aviot/mlvpn:latest
           args:
             #- -p 5678:5678 -text="hello world"
             - --privileged -e VAR_DOCKER_NETWORK='172.16.40' -p 5080-5089:5080-5089/udp --cap-add=NET_ADMIN --device=/dev/net/tun
