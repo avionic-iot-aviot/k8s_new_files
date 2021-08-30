@@ -68,9 +68,12 @@ spec:
                   key: DEVICE_NAME
         - name: aviot-mlvpn
           image: aviot/mlvpn:latest
-          args:
-            #- -p 5678:5678 -text="hello world"
-            - --privileged -e VAR_DOCKER_NETWORK='172.16.40' -p 5080-5089:5080-5089/udp --cap-add=NET_ADMIN --device=/dev/net/tun
+          # args:
+          #   #- -p 5678:5678 -text="hello world"
+          #   - --privileged -e VAR_DOCKER_NETWORK='172.16.40' -p 5080-5089:5080-5089/udp --cap-add=NET_ADMIN --device=/dev/net/tun
+          # command: ["/bin/sh", "-c"]
+          # args:
+          #   - sleep infinity              
           ports:
             - name: port-80
               protocol: UDP
@@ -103,6 +106,7 @@ spec:
               protocol: UDP
               containerPort: 5089
           securityContext:
+            privileged: true
             capabilities:
               add:
                 - NET_ADMIN
@@ -110,6 +114,9 @@ spec:
             - mountPath: "/dev/net/tun"
               name: dev-net-tun
               readOnly: true
+          env:
+            - name: VAR_DOCKER_NETWORK
+              value: "172.16.40"
       dnsConfig:
         nameservers:
           - ${DNS_SERVER_ADDRESS}
@@ -131,49 +138,59 @@ spec:
       port: 5080
       name: mlvpn-80
       targetPort: 5080
+      nodePort: ${MLVPN_PORT_PREFIX}0
     - protocol: UDP
       port: 5081
       name: mlvpn-81
       targetPort: 5081
+      nodePort: ${MLVPN_PORT_PREFIX}1
       # nodePort: 30981
     - protocol: UDP
       port: 5082
       name: mlvpn-82
       targetPort: 5082
+      nodePort: ${MLVPN_PORT_PREFIX}2
       # nodePort: 30982
     - protocol: UDP
       port: 5083
       name: mlvpn-83
       targetPort: 5083
+      nodePort: ${MLVPN_PORT_PREFIX}3
       # nodePort: 30983
     - protocol: UDP
       port: 5084
       name: mlvpn-84
       targetPort: 5084
+      nodePort: ${MLVPN_PORT_PREFIX}4
       # nodePort: 30984
     - protocol: UDP
       port: 5085
       name: mlvpn-85
       targetPort: 5085
+      nodePort: ${MLVPN_PORT_PREFIX}5
       # nodePort: 30985
     - protocol: UDP
       port: 5086
       name: mlvpn-86
       targetPort: 5086
+      nodePort: ${MLVPN_PORT_PREFIX}6
       # nodePort: 30986
     - protocol: UDP
       port: 5087
       name: mlvpn-87
       targetPort: 5087
+      nodePort: ${MLVPN_PORT_PREFIX}7
       # nodePort: 30987
     - protocol: UDP
       port: 5088
       name: mlvpn-88
       targetPort: 5088
+      nodePort: ${MLVPN_PORT_PREFIX}8
       # nodePort: 30988
     - protocol: UDP
       port: 5089
       name: mlvpn-89
       targetPort: 5089
+      nodePort: ${MLVPN_PORT_PREFIX}9
       # nodePort: 30989
 

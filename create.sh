@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ "$#" -ne 6 ]; then
-  echo "Usage: create.sh COM_NAME COM_PASSWORD SUPERNODE_URL NAMESPACE DNS_SERVER_ADDRESS UDP_REMOTE_CONTROLLER_PORT" >&2
+if [ "$#" -ne 7 ]; then
+  echo "Usage: create.sh COM_NAME COM_PASSWORD SUPERNODE_URL NAMESPACE DNS_SERVER_ADDRESS UDP_REMOTE_CONTROLLER_PORT MLVPN_PORT_PREFIX" >&2
   exit 1
 fi
 
@@ -19,7 +19,7 @@ UDP_REMOTE_CONTROLLER_PORT=$6 envsubst < WebSoketServer/ws-server.yaml | kubectl
 
 # PODS WITH N2N ADDRESS
 DNS_SERVER_ADDRESS=$5 envsubst < DnsServerAppComplete/dnsserverapp-complete.yaml | kubectl apply -n $4 -f -
-DNS_SERVER_ADDRESS=$5 envsubst < MLVPN/MLVPN.yaml | kubectl apply -n $4 -f -
+DNS_SERVER_ADDRESS=$5 MLVPN_PORT_PREFIX=$7 envsubst < MLVPN/MLVPN.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < ROS-CORE/ros.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < ROS-NODE-JS/ros-node.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < VideoServer/janus.yaml | kubectl apply -n $4 -f -
