@@ -16,6 +16,7 @@ spec:
       - controller.${TENANT_ID}.aviot.it
       - wss.${TENANT_ID}.aviot.it
       - tetracam.${TENANT_ID}.aviot.it
+      - tetracamstream.${TENANT_ID}.aviot.it
       secretName: ${TENANT_ID}-letsencrypt-cert-tls
   rules:
     - host: ${TENANT_ID}.aviot.it
@@ -50,6 +51,14 @@ spec:
             backend:
               serviceName: tetracam-nginx
               servicePort: 80
+    - host: tetracamstream.${TENANT_ID}.aviot.it
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              serviceName: tetracam-nginx
+              servicePort: 8080
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress

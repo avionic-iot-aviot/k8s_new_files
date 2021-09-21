@@ -71,8 +71,8 @@ spec:
           ports:
             - name: port-80
               containerPort: 80
-            - name: port-30101
-              containerPort: 30101
+            - name: port-8080
+              containerPort: 8080
           securityContext:
             capabilities:
               add:
@@ -103,9 +103,6 @@ spec:
   ports:
     - port: 80
       name: tetracam-nginx-80
-      targetPort:
-    - port: 30101
-      name: mjpg-stream-30101
-      targetPort:
-      nodePort: 30101
+    - port: 8080
+      name: mjpg-stream-8080
 
