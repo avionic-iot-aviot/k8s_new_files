@@ -113,6 +113,11 @@ spec:
                 configMapKeyRef:
                   name: configmap-aviot
                   key: N2N_IP_MLVPN
+            - name: N2N_IP_NGINX
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_NGINX
             - name: TENANT_ID
               valueFrom:
                 configMapKeyRef:
