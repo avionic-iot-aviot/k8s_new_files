@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: tetracam-nginx
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: tetracam-nginx
   template:
     metadata:
       labels:
-        app: nginx
+        app: tetracam-nginx
     spec:
       containers:
         - name: n2nedgecontainer
@@ -81,8 +81,11 @@ spec:
             - mountPath: "/dev/net/tun"
               name: dev-net-tun
               readOnly: true
+      dnsPolicy: "None"
       dnsConfig:
         nameservers:
+          - 10.11.0.1
+        searches:
           - ${DNS_SERVER_ADDRESS}
       volumes:
         - name: dev-net-tun
