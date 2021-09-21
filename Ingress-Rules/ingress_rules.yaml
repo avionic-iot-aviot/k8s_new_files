@@ -48,7 +48,7 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              serviceName: nginx
+              serviceName: tetracam-nginx
               servicePort: 80
 ---
 apiVersion: extensions/v1beta1
