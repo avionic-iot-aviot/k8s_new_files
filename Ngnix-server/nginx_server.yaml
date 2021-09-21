@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: n2nedgecontainer
+          image: "aviot/n2nimage:latest"
+          command: ["/bin/sh", "-c"]
+          args:
+            # keep the dhcp client running in foreground with -f
+            # and the fixed UDP port so that i can open it on AWS security group of the cluster's nodes
+            # in order to enable P2P fast communication between nearby nodes
+            - /edge -u 0 -g 0 -r -a $(N2N_IP_NGINX) -c $(COM_NAME) -k $(COM_PASSWORD) -l $(SUPERNODE_URL) -p $(SUPERNODE_PORT_UDP) && ping ${DNS_SERVER_ADDRESS} -n -i 2;
+          #the following is equivalent to running the container as:
+          #docker run --cap-add=NET_ADMIN --device /dev/net/tun:/dev/net/tun BLA BLA
+          ports:
+            - name: port
+              protocol: UDP
+              containerPort: 42479
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
+          env:
+            - name: N2N_IP_NGINX
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: N2N_IP_NGINX
+            - name: COM_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: COM_NAME
+            - name: COM_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: COM_PASSWORD
+            - name: SUPERNODE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: SUPERNODE_URL
+            - name: SUPERNODE_PORT_UDP
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: SUPERNODE_PORT_UDP
+            - name: DEVICE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-aviot
+                  key: DEVICE_NAME         
+        - name: nginx
+          image: "aviot/nginx:latest"
+          ports:
+            - name: port-80
+              containerPort: 80
+            - name: port-30101
+              containerPort: 30101
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/dev/net/tun"
+              name: dev-net-tun
+              readOnly: true
+      dnsConfig:
+        nameservers:
+          - ${DNS_SERVER_ADDRESS}
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  type: NodePort
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      name: nginx-80
+      targetPort:
+    - port: 30101
+      name: mjpg-stream-30101
+      targetPort:
+      nodePort: 30101
+
