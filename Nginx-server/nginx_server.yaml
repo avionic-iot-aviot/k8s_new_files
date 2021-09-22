@@ -66,8 +66,8 @@ spec:
                 configMapKeyRef:
                   name: configmap-aviot
                   key: DEVICE_NAME         
-        - name: nginx
-          image: "aviot/nginx:latest"
+        - name: tetracam-nginx
+          image: "aviot/tetracam-nginx:latest"
           ports:
             - name: port-80
               containerPort: 80
