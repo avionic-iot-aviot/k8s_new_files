@@ -36,6 +36,42 @@ spec:
       targetPort: 8089
       nodePort:
 
+    - name: videoroom-port-0
+      protocol: UDP
+      port: ${JANUS_PORT_PREFIX}0
+      targetPort: ${JANUS_PORT_PREFIX}0
+      nodePort: ${JANUS_PORT_PREFIX}0
+
+    - name: videoroom-port-1
+      protocol: UDP
+      port: ${JANUS_PORT_PREFIX}1
+      targetPort: ${JANUS_PORT_PREFIX}1
+      nodePort: ${JANUS_PORT_PREFIX}1
+
+    - name: videoroom-port-2
+      protocol: UDP
+      port: ${JANUS_PORT_PREFIX}2
+      targetPort: ${JANUS_PORT_PREFIX}2
+      nodePort: ${JANUS_PORT_PREFIX}2
+
+    - name: videoroom-port-3
+      protocol: UDP
+      port: ${JANUS_PORT_PREFIX}3
+      targetPort: ${JANUS_PORT_PREFIX}3
+      nodePort: ${JANUS_PORT_PREFIX}3
+    
+    - name: videoroom-port-4
+      protocol: UDP
+      port: ${JANUS_PORT_PREFIX}4
+      targetPort: ${JANUS_PORT_PREFIX}4
+      nodePort: ${JANUS_PORT_PREFIX}4
+
+    - name: videoroom-port-5
+      protocol: UDP
+      port: ${JANUS_PORT_PREFIX}5
+      targetPort: ${JANUS_PORT_PREFIX}5
+      nodePort: ${JANUS_PORT_PREFIX}5
+
   type: NodePort
 
 ---
@@ -102,6 +138,7 @@ spec:
                   name: configmap-aviot
                   key: N2N_IP_JANUS
         - image: aviot/janus:latest
+          imagePullPolicy: Always
           name: janus-gateway
           #command: ["/opt/janus/bin/janus"]
           #resources:

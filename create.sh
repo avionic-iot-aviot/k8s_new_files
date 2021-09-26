@@ -1,11 +1,11 @@
 #!/bin/bash
 
-if [ "$#" -ne 7 ]; then
-  echo "Usage: create.sh COM_NAME COM_PASSWORD SUPERNODE_URL NAMESPACE DNS_SERVER_ADDRESS UDP_REMOTE_CONTROLLER_PORT MLVPN_PORT_PREFIX" >&2
+if [ "$#" -ne 8 ]; then
+  echo "Usage: create.sh COM_NAME COM_PASSWORD SUPERNODE_URL NAMESPACE DNS_SERVER_ADDRESS UDP_REMOTE_CONTROLLER_PORT MLVPN_PORT_PREFIX JANUS_PORT_PREFIX" >&2
   exit 1
 fi
 
-kubectl create namespace $4
+# kubectl create namespace $4
 
 # CONFIG MAP
 COM_NAME=$1 COM_PASSWORD=$2 SUPERNODE_URL=$3 TENANT_ID=$4 envsubst < configmap.yaml | kubectl apply -n $4 -f -
@@ -22,7 +22,7 @@ DNS_SERVER_ADDRESS=$5 envsubst < DnsServerAppComplete/dnsserverapp-complete.yaml
 DNS_SERVER_ADDRESS=$5 MLVPN_PORT_PREFIX=$7 envsubst < MLVPN/MLVPN.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < ROS-CORE/ros.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < ROS-NODE-JS/ros-node.yaml | kubectl apply -n $4 -f -
-DNS_SERVER_ADDRESS=$5 envsubst < VideoServer/janus.yaml | kubectl apply -n $4 -f -
+DNS_SERVER_ADDRESS=$5 JANUS_PORT_PREFIX=$8 envsubst < VideoServer/janus.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < Ngnix-server/nginx_server.yaml | kubectl apply -n $4 -f -
 
 # INGRESS RULES
