@@ -5,7 +5,7 @@ if [ "$#" -ne 8 ]; then
   exit 1
 fi
 
-# kubectl create namespace $4
+kubectl create namespace $4
 
 # CONFIG MAP
 COM_NAME=$1 COM_PASSWORD=$2 SUPERNODE_URL=$3 TENANT_ID=$4 envsubst < configmap.yaml | kubectl apply -n $4 -f -
