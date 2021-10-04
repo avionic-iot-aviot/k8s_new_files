@@ -90,8 +90,8 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             # We need to substitute the TENANT_ID at running time. This way we can distribute this micro-service on different namespaces.
-            - envsubst < /etc/nginx/conf.d/default.conf  > tmp.conf && mv tmp.conf /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"
-      dnsPolicy: "None"
+            - DOMAIN=${DOMAIN} envsubst < /etc/nginx/conf.d/default.conf  > tmp.conf && mv tmp.conf /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"
+      # dnsPolicy: "None"
       dnsConfig:
         nameservers:
           - ${DNS_SERVER_ADDRESS}
