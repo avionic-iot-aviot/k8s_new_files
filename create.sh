@@ -23,7 +23,7 @@ DNS_SERVER_ADDRESS=$5 MLVPN_PORT_PREFIX=$7 envsubst < MLVPN/MLVPN.yaml | kubectl
 DNS_SERVER_ADDRESS=$5 envsubst < ROS-CORE/ros.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 envsubst < ROS-NODE-JS/ros-node.yaml | kubectl apply -n $4 -f -
 DNS_SERVER_ADDRESS=$5 JANUS_PORT_PREFIX=$8 envsubst < VideoServer/janus.yaml | kubectl apply -n $4 -f -
-DNS_SERVER_ADDRESS=$5 envsubst < Nginx-server/nginx_server.yaml | kubectl apply -n $4 -f -
+DOMAIN=$4 DNS_SERVER_ADDRESS=$5 envsubst < Nginx-server/nginx_server.yaml | kubectl apply -n $4 -f -
 
 # INGRESS RULES
 TENANT_ID=$4 envsubst < Ingress-Rules/ingress_rules.yaml | kubectl apply -n $4 -f -
